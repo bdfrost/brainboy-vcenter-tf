@@ -1,8 +1,21 @@
 # brainboy-vcenter-tf
 # https://github.com/tfutils/tfenv
 
+## MAC INSTALL
 # brew install tfenv
-# tfenv install 0.11
+
+
+## Ubuntu Install
+# $ git clone https://github.com/tfutils/tfenv.git ~/.tfenv
+# $ echo 'export PATH="$HOME/.tfenv/bin:$PATH"' >> ~/.bash_profile
+# $ mkdir -p ~/.local/bin/
+# $ . ~/.profile
+# $ ln -s ~/.tfenv/bin/* ~/.local/bin
+# $ which tfenv
+
+
+
+# tfenv install 0.11.14
 # tfenv list
 
 # $ echo "latest:^0.11" > ${HOME}/.terraform-version
