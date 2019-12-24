@@ -14,7 +14,14 @@
 # $ which tfenv
 
 
+# Set token
+# $ vi .terraformrc
+# credentials "app.terraform.io" {
+#    token = "dgjfFGBtccNSTUFF.STUFFF.STUFFrPy3TeBwlk8QepgHa3pWk"
+# }
 
+
+# GENERAL DOCS FOR TFENV
 # tfenv install 0.11.14
 # tfenv list
 
@@ -24,6 +31,8 @@
 # or
 # $ echo "latest:^0.11" > ${HOME}/git/brainboy-vcenter-tf/.terraform-version
 
+
+# MY DOC FOR TFENV FOR THIS ENV
 # $ tfenv install
 
 # $ cd ${HOME}/git/brainboy-vcenter-tf/
