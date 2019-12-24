@@ -19,25 +19,21 @@ provider "vsphere" {
 }
 
 data "vsphere_datacenter" "dc" {
-  # name = "US Datacenter"
-  name = "dc1"
+  name = "${var.vsphere_datacenter}"
 }
 
 data "vsphere_datastore" "datastore" {
-  # name          = "Synology-DS1"
-  name          = "datastore1"
+  name          = "${var.vsphere_datastore}"
   datacenter_id = "${data.vsphere_datacenter.dc.id}"
 }
 
 data "vsphere_resource_pool" "pool" {
-  # name          = "General Cluster/Infrastructure"
-  name          = "cluster1/Resources"
+  name          = "${var.vsphere_resource_pool}"
   datacenter_id = "${data.vsphere_datacenter.dc.id}"
 }
 
 data "vsphere_network" "network" {
-  name          = "public"
-  name          = "VM Network"
+  name          = "${var.vsphere_network}"
   datacenter_id = "${data.vsphere_datacenter.dc.id}"
 }
 
