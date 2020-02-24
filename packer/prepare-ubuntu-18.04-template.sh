@@ -5,22 +5,11 @@
 # modified from: jcppkkk/prepare-ubuntu-template.sh
 # TESTED ON UBUNTU 18.04 LTS
 
-# SETUP & RUN
-# curl -sL https://raw.githubusercontent.com/jimangel/ubuntu-18.04-scripts/master/prepare-ubuntu-18.04-template.sh | sudo -E bash -
-
-if [ `id -u` -ne 0 ]; then
-	echo Need sudo
-	exit 1
-fi
-
-set -v
+#set -v
 
 #update apt-cache
-apt update -y
-apt upgrade -y
-
-#install packages
-apt install -y open-vm-tools
+apt-get update -y
+apt-get upgrade -y
 
 #Stop services for cleanup
 service rsyslog stop
@@ -83,9 +72,6 @@ sudo sed -ri '/\sswap\s/s/^#?/#/' /etc/fstab
 # set dhcp to use mac - this is a little bit of a hack but I need this to be placed under the active nic settings
 # also look in /etc/netplan for other config files
 sed -i 's/optional: true/dhcp-identifier: mac/g' /etc/netplan/50-cloud-init.yaml
-
-# cleans out all of the cloud-init cache / logs - this is mainly cleaning out networking info
-sudo cloud-init clean --logs
 
 #cleanup shell history
 cat /dev/null > ~/.bash_history && history -c
