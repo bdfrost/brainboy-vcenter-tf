@@ -27,9 +27,9 @@ data "vsphere_datastore" "datastore" {
   datacenter_id = "${data.vsphere_datacenter.dc.id}"
 }
 
-data "vsphere_compute_cluster" cluster {
+data "vsphere_compute_cluster" "cluster" {
   name          = "${var.vsphere_cluster}"
-  datacenter_id = "${data.vsphere_datacenter.datacenter.id}"
+  datacenter_id = "${data.vsphere_datacenter.dc.id}"
 }
 
 data "vsphere_resource_pool" "pool" {
@@ -42,13 +42,13 @@ data "vsphere_network" "network" {
   datacenter_id = "${data.vsphere_datacenter.dc.id}"
 }
 
-data "vsphere_virtual_machine" template {
+data "vsphere_virtual_machine" "k3s_template" {
   name          = "${var.k3s_template}"
-  datacenter_id = "${data.vsphere_datacenter.datacenter.id}"
+  datacenter_id = "${data.vsphere_datacenter.dc.id}"
 }
 
-resource "vsphere_virtual_machine" "vm" {
-  name             = "terraform-test"
+resource "vsphere_virtual_machine" "k3s-master" {
+  name             = "k3s-master"
   resource_pool_id = "${data.vsphere_resource_pool.pool.id}"
   datastore_id     = "${data.vsphere_datastore.datastore.id}"
 
@@ -62,11 +62,11 @@ resource "vsphere_virtual_machine" "vm" {
   network_interface {
     network_id = "${data.vsphere_network.network.id}"
     adapter_type = "${data.vsphere_virtual_machine.k3s_template.network_interface_types[0]}"
+    mac_address = "${var.k3s_master_mac}"
   }
 
   disk {
     label = "disk0"
-    size  = 20
     size             = "${data.vsphere_virtual_machine.k3s_template.disks.0.size}"
     eagerly_scrub    = "${data.vsphere_virtual_machine.k3s_template.disks.0.eagerly_scrub}"
     thin_provisioned = "${data.vsphere_virtual_machine.k3s_template.disks.0.thin_provisioned}"
@@ -79,7 +79,7 @@ resource "vsphere_virtual_machine" "vm" {
       linux_options {
         host_name  = "tfel7"      
         domain = "brainboy.lan.local"
-        time_zone = "Australia/Sydney"
+        time_zone = "America/Chicago"
       }
 
       network_interface {        
@@ -88,22 +88,81 @@ resource "vsphere_virtual_machine" "vm" {
   }
 }
 
+resource "vsphere_virtual_machine" "k3s-node-1" {
+  name             = "k3s-node-1"
+  resource_pool_id = "${data.vsphere_resource_pool.pool.id}"
+  datastore_id     = "${data.vsphere_datastore.datastore.id}"
 
-# resource "vsphere_virtual_machine" "vm" {
-#   name             = "terraform-test"
-#   resource_pool_id = "${data.vsphere_resource_pool.pool.id}"
-#   datastore_id     = "${data.vsphere_datastore.datastore.id}"
+  num_cpus = 2
+  memory   = 1024
+  guest_id = "${data.vsphere_virtual_machine.k3s_template.guest_id}"
+  scsi_type = "${data.vsphere_virtual_machine.k3s_template.scsi_type}"
+  wait_for_guest_net_timeout = 0
+  wait_for_guest_net_routable = false
 
-#   num_cpus = 2
-#   memory   = 1024
-#   guest_id = "other3xLinux64Guest"
+  network_interface {
+    network_id = "${data.vsphere_network.network.id}"
+    adapter_type = "${data.vsphere_virtual_machine.k3s_template.network_interface_types[0]}"
+    mac_address = "${var.k3s_node_1_mac}"
+  }
 
-#   network_interface {
-#     network_id = "${data.vsphere_network.network.id}"
-#   }
+  disk {
+    label = "disk0"
+    size             = "${data.vsphere_virtual_machine.k3s_template.disks.0.size}"
+    eagerly_scrub    = "${data.vsphere_virtual_machine.k3s_template.disks.0.eagerly_scrub}"
+    thin_provisioned = "${data.vsphere_virtual_machine.k3s_template.disks.0.thin_provisioned}"
+  }
+  clone {
+    template_uuid = "${data.vsphere_virtual_machine.k3s_template.id}"
 
-#   disk {
-#     label = "disk0"
-#     size  = 20
-#   }
-# }
+    customize {
+
+      linux_options {
+        host_name  = "k3s-node-1"
+        domain = "brainboy.lan.local"
+        time_zone = "America/Chicago"
+      }
+
+      network_interface {
+      }
+    }
+  }
+}
+
+resource "vsphere_virtual_machine" "k3s-node-2" {
+  name             = "k3s-node-2"
+  resource_pool_id = "${data.vsphere_resource_pool.pool.id}"
+  datastore_id     = "${data.vsphere_datastore.datastore.id}"
+
+  num_cpus = 2
+  memory   = 1024
+  guest_id = "${data.vsphere_virtual_machine.k3s_template.guest_id}"
+  scsi_type = "${data.vsphere_virtual_machine.k3s_template.scsi_type}"
+  wait_for_guest_net_timeout = 0
+  wait_for_guest_net_routable = false
+
+  network_interface {
+    network_id = "${data.vsphere_network.network.id}"
+    adapter_type = "${data.vsphere_virtual_machine.k3s_template.network_interface_types[0]}"
+    mac_address = "${var.k3s_node_2_mac}"
+  }
+
+  disk {
+    label = "disk0"
+    size             = "${data.vsphere_virtual_machine.k3s_template.disks.0.size}"
+    eagerly_scrub    = "${data.vsphere_virtual_machine.k3s_template.disks.0.eagerly_scrub}"
+    thin_provisioned = "${data.vsphere_virtual_machine.k3s_template.disks.0.thin_provisioned}"
+  }
+  clone {
+    template_uuid = "${data.vsphere_virtual_machine.k3s_template.id}"
+
+    customize {
+
+      linux_options {
+        host_name  = "k3s-node-2"
+        domain = "brainboy.lan.local"
+        time_zone = "America/Chicago"
+      }
+    }
+  }
+}

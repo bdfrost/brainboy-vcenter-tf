@@ -44,10 +44,10 @@ cat << 'EOL' | sudo tee /etc/rc.local
 #
 # By default this script does nothing.
 
-# dynamically create hostname (optional)
-if hostname | grep localhost; then
-    hostnamectl set-hostname "$(head /dev/urandom | tr -dc A-Za-z0-9 | head -c 13 ; echo '')"
-fi
+## dynamically create hostname (optional)
+#if hostname | grep localhost; then
+#    hostnamectl set-hostname "$(head /dev/urandom | tr -dc A-Za-z0-9 | head -c 13 ; echo '')"
+#fi
 
 test -f /etc/ssh/ssh_host_dsa_key || dpkg-reconfigure openssh-server
 exit 0
@@ -57,8 +57,6 @@ EOL
 chmod +x /etc/rc.local
 
 #reset hostname
-# prevent cloudconfig from preserving the original hostname
-sed -i 's/preserve_hostname: false/preserve_hostname: true/g' /etc/cloud/cloud.cfg
 truncate -s0 /etc/hostname
 hostnamectl set-hostname localhost
 
@@ -71,7 +69,7 @@ sudo sed -ri '/\sswap\s/s/^#?/#/' /etc/fstab
 
 # set dhcp to use mac - this is a little bit of a hack but I need this to be placed under the active nic settings
 # also look in /etc/netplan for other config files
-sed -i 's/optional: true/dhcp-identifier: mac/g' /etc/netplan/50-cloud-init.yaml
+#sed -i 's/optional: true/dhcp-identifier: mac/g' /etc/netplan/50-cloud-init.yaml
 
 #cleanup shell history
 cat /dev/null > ~/.bash_history && history -c
