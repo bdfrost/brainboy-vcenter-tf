@@ -5,3 +5,5 @@ variable "vsphere_datacenter" {}
 variable "vsphere_datastore" {}
 variable "vsphere_resource_pool" {}
 variable "vsphere_network" {}
+variable "vsphere_cluster" {}
+variable "k3s_template" {}

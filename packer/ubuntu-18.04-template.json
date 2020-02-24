@@ -1,0 +1,84 @@
+{
+  "variables": {
+      "vcenter_server": "null",
+      "username": "null",
+      "password": "null",
+      "cluster": "null",
+      "network": "null",
+      "host": "null",
+      "ssh_username": "null",
+      "ssh_password": "null",
+      "datastore": "null"
+  },
+  "builders": [
+    {
+      "vcenter_server": "{{user `vcenter_server`}}",
+      "username": "{{user `username`}}",
+      "password": "{{user `password`}}",
+      "cluster": "{{user `cluster`}}",
+      "network": "{{user `network`}}",
+      "host": "{{user `host`}}",
+      "ssh_username": "{{user `ssh_username`}}",
+      "ssh_password": "{{user `ssh_password`}}",
+      "datastore": "{{user `datastore`}}",
+
+      "type": "vsphere-iso",
+
+      "insecure_connection": "true",
+
+      "vm_name":  "ubuntu-18.04-template",
+
+      "guest_os_type": "ubuntu64Guest",
+
+      "CPUs":             1,
+      "RAM":              1024,
+      "RAM_reserve_all": true,
+
+      "disk_controller_type":  "pvscsi",
+      "disk_size":        32768,
+      "disk_thin_provisioned": true,
+
+      "network_card": "vmxnet3",
+
+      "convert_to_template": "true",
+      "folder": "Templates",
+
+      "iso_paths": [
+        "[P420] InstallMedia/ubuntu-18.04.4-server-amd64.iso"
+      ],
+      "floppy_files": [
+        "{{template_dir}}/preseed.cfg"
+      ],
+      "boot_command": [
+        "<enter><wait><f6><wait><esc><wait>",
+        "<bs><bs><bs><bs><bs><bs><bs><bs><bs><bs>",
+        "<bs><bs><bs><bs><bs><bs><bs><bs><bs><bs>",
+        "<bs><bs><bs><bs><bs><bs><bs><bs><bs><bs>",
+        "<bs><bs><bs><bs><bs><bs><bs><bs><bs><bs>",
+        "<bs><bs><bs><bs><bs><bs><bs><bs><bs><bs>",
+        "<bs><bs><bs><bs><bs><bs><bs><bs><bs><bs>",
+        "<bs><bs><bs><bs><bs><bs><bs><bs><bs><bs>",
+        "<bs><bs><bs><bs><bs><bs><bs><bs><bs><bs>",
+        "<bs><bs><bs>",
+        "/install/vmlinuz",
+        " initrd=/install/initrd.gz",
+        " priority=critical",
+        " locale=en_US",
+        " file=/media/preseed.cfg",
+        "<enter>"
+      ]
+    }
+  ],
+  "provisioners": [
+    {
+      "type": "shell",
+      "inline": ["ls /"]
+    },
+    {
+      "type": "shell",
+      "script": "prepare-ubuntu-18.04-template.sh",
+      "execute_command": "sudo -E '{{ .Path }}'"
+    }
+  ]
+}
+
