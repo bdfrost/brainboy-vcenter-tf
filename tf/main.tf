@@ -53,7 +53,7 @@ resource "vsphere_virtual_machine" "k3s-master" {
   datastore_id     = "${data.vsphere_datastore.datastore.id}"
 
   num_cpus = 2
-  memory   = 1024
+  memory   = 3072
   guest_id = "${data.vsphere_virtual_machine.k3s_template.guest_id}"
   scsi_type = "${data.vsphere_virtual_machine.k3s_template.scsi_type}"
   wait_for_guest_net_timeout = 0
@@ -62,6 +62,7 @@ resource "vsphere_virtual_machine" "k3s-master" {
   network_interface {
     network_id = "${data.vsphere_network.network.id}"
     adapter_type = "${data.vsphere_virtual_machine.k3s_template.network_interface_types[0]}"
+    use_static_mac = true
     mac_address = "${var.k3s_master_mac}"
   }
 
@@ -77,8 +78,8 @@ resource "vsphere_virtual_machine" "k3s-master" {
     customize {
       
       linux_options {
-        host_name  = "tfel7"      
-        domain = "brainboy.lan.local"
+        host_name  = "k3s-master"
+        domain = "brainboy.local.lan"
         time_zone = "America/Chicago"
       }
 
@@ -94,7 +95,7 @@ resource "vsphere_virtual_machine" "k3s-node-1" {
   datastore_id     = "${data.vsphere_datastore.datastore.id}"
 
   num_cpus = 2
-  memory   = 1024
+  memory   = 3072
   guest_id = "${data.vsphere_virtual_machine.k3s_template.guest_id}"
   scsi_type = "${data.vsphere_virtual_machine.k3s_template.scsi_type}"
   wait_for_guest_net_timeout = 0
@@ -103,6 +104,7 @@ resource "vsphere_virtual_machine" "k3s-node-1" {
   network_interface {
     network_id = "${data.vsphere_network.network.id}"
     adapter_type = "${data.vsphere_virtual_machine.k3s_template.network_interface_types[0]}"
+    use_static_mac = true
     mac_address = "${var.k3s_node_1_mac}"
   }
 
@@ -119,7 +121,7 @@ resource "vsphere_virtual_machine" "k3s-node-1" {
 
       linux_options {
         host_name  = "k3s-node-1"
-        domain = "brainboy.lan.local"
+        domain = "brainboy.local.lan"
         time_zone = "America/Chicago"
       }
 
@@ -135,7 +137,7 @@ resource "vsphere_virtual_machine" "k3s-node-2" {
   datastore_id     = "${data.vsphere_datastore.datastore.id}"
 
   num_cpus = 2
-  memory   = 1024
+  memory   = 3072
   guest_id = "${data.vsphere_virtual_machine.k3s_template.guest_id}"
   scsi_type = "${data.vsphere_virtual_machine.k3s_template.scsi_type}"
   wait_for_guest_net_timeout = 0
@@ -144,6 +146,7 @@ resource "vsphere_virtual_machine" "k3s-node-2" {
   network_interface {
     network_id = "${data.vsphere_network.network.id}"
     adapter_type = "${data.vsphere_virtual_machine.k3s_template.network_interface_types[0]}"
+    use_static_mac = true
     mac_address = "${var.k3s_node_2_mac}"
   }
 
@@ -160,8 +163,11 @@ resource "vsphere_virtual_machine" "k3s-node-2" {
 
       linux_options {
         host_name  = "k3s-node-2"
-        domain = "brainboy.lan.local"
+        domain = "brainboy.local.lan"
         time_zone = "America/Chicago"
+      }
+    
+      network_interface {
       }
     }
   }
